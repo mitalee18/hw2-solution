@@ -5,7 +5,10 @@ import view.ExpenseTrackerView;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JOptionPane;
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableModelListener;
 
 import model.ExpenseTrackerModel;
 import model.Transaction;
@@ -25,6 +28,7 @@ public class ExpenseTrackerController {
   public ExpenseTrackerController(ExpenseTrackerModel model, ExpenseTrackerView view) {
     this.model = model;
     this.view = view;
+    addListenerToTableRows();
   }
 
   public void setFilter(TransactionFilter filter) {
@@ -72,4 +76,19 @@ public class ExpenseTrackerController {
       view.toFront();}
 
   }
+
+  public void addListenerToTableRows(){
+
+  }
+
+  public void refreshUndoBtn(){
+    if(model.getSelectedRows().length > 0){
+      view.enableUndoBtn();
+    }
+    else{
+      view.disableUndoBtn();
+    }
+  }
+
+
 }

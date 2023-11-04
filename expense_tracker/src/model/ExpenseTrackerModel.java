@@ -8,6 +8,7 @@ public class ExpenseTrackerModel {
 
   //encapsulation - data integrity
   private List<Transaction> transactions;
+  private int[] selectedRows;
 
   public ExpenseTrackerModel() {
     transactions = new ArrayList<>(); 
@@ -30,4 +31,10 @@ public class ExpenseTrackerModel {
     return Collections.unmodifiableList(new ArrayList<>(transactions));
   }
 
+  public  int[] getSelectedRows(){
+    return selectedRows;
+  }
+  public void  setSelectedRows(int[] rows){
+    this.selectedRows = rows;
+  }
 }
