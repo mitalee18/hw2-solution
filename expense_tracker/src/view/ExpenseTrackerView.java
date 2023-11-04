@@ -1,6 +1,8 @@
 package view;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
@@ -26,6 +28,9 @@ public class ExpenseTrackerView extends JFrame {
 
   private JTextField amountFilterField;
   private JButton amountFilterBtn;
+
+  private JButton undoBtn;
+
 
   
 
@@ -61,7 +66,7 @@ public class ExpenseTrackerView extends JFrame {
     JLabel amountFilterLabel = new JLabel("Filter by Amount:");
     amountFilterField = new JTextField(10);
     amountFilterBtn = new JButton("Filter by Amount");
-  
+    undoBtn = new JButton("Undo");
 
   
     // Layout components
@@ -75,6 +80,8 @@ public class ExpenseTrackerView extends JFrame {
     JPanel buttonPanel = new JPanel();
     buttonPanel.add(amountFilterBtn);
     buttonPanel.add(categoryFilterBtn);
+    buttonPanel.add(undoBtn);
+    undoBtn.setEnabled(false);
   
     // Add panels to frame
     add(inputPanel, BorderLayout.NORTH);
@@ -123,6 +130,11 @@ public class ExpenseTrackerView extends JFrame {
   public void addApplyCategoryFilterListener(ActionListener listener) {
     categoryFilterBtn.addActionListener(listener);
   }
+
+  public void applyUndoBtnListener(ActionListener listener) {
+      undoBtn.addActionListener(listener);
+  }
+
 
   public String getCategoryFilterInput() {
     return JOptionPane.showInputDialog(this, "Enter Category Filter:");
@@ -176,7 +188,7 @@ public class ExpenseTrackerView extends JFrame {
 
   public void highlightRows(List<Integer> rowIndexes) {
       // The row indices are being used as hashcodes for the transactions.
-      // The row index directly maps to the the transaction index in the list.
+      // The row index directly maps to the transaction index in the list.
       transactionsTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
           @Override
           public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
@@ -194,5 +206,22 @@ public class ExpenseTrackerView extends JFrame {
       transactionsTable.repaint();
   }
 
+  public int[] getSelectedRows(){
+      return transactionsTable.getSelectedRows();
+  }
+
+  public void addEventListenerToTableRows(ListSelectionListener listener){
+      ListSelectionModel selectionModel = transactionsTable.getSelectionModel();
+      selectionModel.addListSelectionListener(listener);
+  }
+  public void enableUndoBtn(){
+      undoBtn.setEnabled(true);
+
+  }
+
+  public void disableUndoBtn(){
+      undoBtn.setEnabled(false);
+
+  }
 
 }

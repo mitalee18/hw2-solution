@@ -1,9 +1,13 @@
 import javax.swing.JOptionPane;
 import controller.ExpenseTrackerController;
 import model.ExpenseTrackerModel;
+import model.Transaction;
 import view.ExpenseTrackerView;
 import model.Filter.AmountFilter;
 import model.Filter.CategoryFilter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ExpenseTrackerApp {
 
@@ -67,6 +71,29 @@ public class ExpenseTrackerApp {
     JOptionPane.showMessageDialog(view,exception.getMessage());
     view.toFront();
    }});
+
+    view.applyUndoBtnListener(e -> {
+        try{
+            int[] rows = model.getSelectedRows();
+            List<Transaction> transactions = model.getTransactions();
+            List<Transaction> transactionsToRemove = new ArrayList<>();
+            for(int row : rows){
+                transactionsToRemove.add(transactions.get(row));
+            }
+
+            for (Transaction transaction: transactionsToRemove){
+                model.removeTransaction(transaction);
+            }
+            controller.refresh();
+        }
+        catch (IllegalArgumentException exception){
+        }
+    });
+
+  view.addEventListenerToTableRows(e -> {
+      model.setSelectedRows(view.getSelectedRows());
+      controller.refreshUndoBtn();
+  });
     
 
   }
