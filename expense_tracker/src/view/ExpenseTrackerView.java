@@ -207,12 +207,17 @@ public class ExpenseTrackerView extends JFrame {
       transactionsTable.repaint();
   }
 
-  public int[] getSelectedRows(){
-      int selectedRow = transactionsTable.getSelectedRow();
-      int lastRow = transactionsTable.getRowCount() - 1;
-      if (selectedRow == lastRow) {
-          // If the last row is selected, deselect it
-          transactionsTable.removeRowSelectionInterval(lastRow, lastRow);
+  public int[] getSelectedRows() {
+      int[] selectedRows = transactionsTable.getSelectedRows();
+
+      // Check if there are selected rows
+      if (selectedRows.length > 0) {
+          // Deselect the last selected row
+          int lastSelectedRow = selectedRows[selectedRows.length - 1];
+          int lastRow = transactionsTable.getRowCount() - 1;
+          if (lastSelectedRow == lastRow) {
+              transactionsTable.removeRowSelectionInterval(lastSelectedRow, lastSelectedRow);
+          }
       }
       return transactionsTable.getSelectedRows();
   }

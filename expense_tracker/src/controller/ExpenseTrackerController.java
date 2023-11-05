@@ -3,13 +3,9 @@ package controller;
 import view.ExpenseTrackerView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TableModelListener;
 
 import model.ExpenseTrackerModel;
 import model.Transaction;
@@ -62,6 +58,7 @@ public class ExpenseTrackerController {
       // Use the Strategy class to perform the desired filtering
       List<Transaction> transactions = model.getTransactions();
       List<Transaction> filteredTransactions = filter.filter(transactions);
+//      model.setFilteredTransactions(filteredTransactions);
       List<Integer> rowIndexes = new ArrayList<>();
       for (Transaction t : filteredTransactions) {
         int rowIndex = transactions.indexOf(t);
