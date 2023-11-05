@@ -12,6 +12,7 @@ import java.text.NumberFormat;
 
 import model.Transaction;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ExpenseTrackerView extends JFrame {
@@ -30,6 +31,7 @@ public class ExpenseTrackerView extends JFrame {
   private JButton amountFilterBtn;
 
   private JButton undoBtn;
+
 
 
   
@@ -101,8 +103,15 @@ public class ExpenseTrackerView extends JFrame {
   }
     
 
-  public List<Transaction> getTransactionsTable() {
-    return (List<Transaction>) transactionsTable;
+  public JTable getTransactionsTable() {
+    return  transactionsTable;
+
+//      List<Transaction> list = new ArrayList<>();
+//      for (int i = 0; i < transactionsTable.getRowCount(); i++) {
+//          list.add((Transaction) transactionsTable.getValueAt(i, 0));
+//      }
+//
+//      return list;
   }
 
   public double getAmountField() {
@@ -223,5 +232,11 @@ public class ExpenseTrackerView extends JFrame {
       undoBtn.setEnabled(false);
 
   }
+
+  public boolean getUndoBtn(){
+      return undoBtn.isEnabled();
+  }
+
+
 
 }
