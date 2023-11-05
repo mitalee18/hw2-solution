@@ -3,6 +3,7 @@ package controller;
 import view.ExpenseTrackerView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.*;
@@ -28,7 +29,6 @@ public class ExpenseTrackerController {
   public ExpenseTrackerController(ExpenseTrackerModel model, ExpenseTrackerView view) {
     this.model = model;
     this.view = view;
-    addListenerToTableRows();
   }
 
   public void setFilter(TransactionFilter filter) {
@@ -77,9 +77,6 @@ public class ExpenseTrackerController {
 
   }
 
-  public void addListenerToTableRows(){
-
-  }
 
   public void refreshUndoBtn(){
     if(model.getSelectedRows().length > 0){

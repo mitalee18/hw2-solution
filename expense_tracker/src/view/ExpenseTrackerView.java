@@ -12,6 +12,7 @@ import java.text.NumberFormat;
 
 import model.Transaction;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class ExpenseTrackerView extends JFrame {
@@ -207,6 +208,12 @@ public class ExpenseTrackerView extends JFrame {
   }
 
   public int[] getSelectedRows(){
+      int selectedRow = transactionsTable.getSelectedRow();
+      int lastRow = transactionsTable.getRowCount() - 1;
+      if (selectedRow == lastRow) {
+          // If the last row is selected, deselect it
+          transactionsTable.removeRowSelectionInterval(lastRow, lastRow);
+      }
       return transactionsTable.getSelectedRows();
   }
 
@@ -216,7 +223,6 @@ public class ExpenseTrackerView extends JFrame {
   }
   public void enableUndoBtn(){
       undoBtn.setEnabled(true);
-
   }
 
   public void disableUndoBtn(){
