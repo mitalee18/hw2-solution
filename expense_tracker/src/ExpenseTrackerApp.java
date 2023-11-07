@@ -81,10 +81,12 @@ public class ExpenseTrackerApp {
                 transactionsToRemove.add(transactions.get(row));
             }
 
-            for (Transaction transaction: transactionsToRemove){
+            for(Transaction transaction: transactionsToRemove){
                 model.removeTransaction(transaction);
+
             }
             controller.refresh();
+            controller.applyFilter();
         }
         catch (IllegalArgumentException exception){
         }

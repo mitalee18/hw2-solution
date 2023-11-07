@@ -12,7 +12,6 @@ import java.text.NumberFormat;
 
 import model.Transaction;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ExpenseTrackerView extends JFrame {
@@ -215,7 +214,18 @@ public class ExpenseTrackerView extends JFrame {
       transactionsTable.repaint();
   }
 
-  public int[] getSelectedRows(){
+  public int[] getSelectedRows() {
+      int[] selectedRows = transactionsTable.getSelectedRows();
+
+      // Check if there are selected rows
+      if (selectedRows.length > 0) {
+          // Deselect the last selected row
+          int lastSelectedRow = selectedRows[selectedRows.length - 1];
+          int lastRow = transactionsTable.getRowCount() - 1;
+          if (lastSelectedRow == lastRow) {
+              transactionsTable.removeRowSelectionInterval(lastSelectedRow, lastSelectedRow);
+          }
+      }
       return transactionsTable.getSelectedRows();
   }
 
@@ -225,7 +235,6 @@ public class ExpenseTrackerView extends JFrame {
   }
   public void enableUndoBtn(){
       undoBtn.setEnabled(true);
-
   }
 
   public void disableUndoBtn(){
