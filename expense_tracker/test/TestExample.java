@@ -2,6 +2,7 @@
 
 import java.awt.*;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.text.ParseException;
@@ -88,6 +89,39 @@ public class TestExample {
         assertEquals(amount, getTotalCost(), 0.01);
     }
 
+
+    @Test
+    public void testRemoveTransaction() {
+        // Pre-condition: List of transactions is empty
+        assertEquals(0, model.getTransactions().size());
+    
+        // Perform the action: Add and remove a transaction
+	double amount = 50.0;
+	String category = "food";
+        Transaction addedTransaction = new Transaction(amount, category);
+        model.addTransaction(addedTransaction);
+    
+        // Pre-condition: List of transactions contains only
+	//                the added transaction
+        assertEquals(1, model.getTransactions().size());
+	Transaction firstTransaction = model.getTransactions().get(0);
+	checkTransaction(amount, category, firstTransaction);
+
+	assertEquals(amount, getTotalCost(), 0.01);
+	
+	// Perform the action: Remove the transaction
+        model.removeTransaction(addedTransaction);
+    
+        // Post-condition: List of transactions is empty
+        List<Transaction> transactions = model.getTransactions();
+        assertEquals(0, transactions.size());
+    
+        // Check the total cost after removing the transaction
+        double totalCost = getTotalCost();
+        assertEquals(0.00, totalCost, 0.01);
+    }
+
+
     @Test
     public void testAddTransactionCase1() {
         // Pre-condition: List of transactions is empty
@@ -128,61 +162,12 @@ public class TestExample {
         }
     }
 
-
-    @Test
-    public void testRemoveTransaction() {
-        // Pre-condition: List of transactions is empty
-        assertEquals(0, model.getTransactions().size());
-    
-        // Perform the action: Add and remove a transaction
-	double amount = 50.0;
-	String category = "food";
-        Transaction addedTransaction = new Transaction(amount, category);
-        model.addTransaction(addedTransaction);
-    
-        // Pre-condition: List of transactions contains only
-	//                the added transaction
-        assertEquals(1, model.getTransactions().size());
-	Transaction firstTransaction = model.getTransactions().get(0);
-	checkTransaction(amount, category, firstTransaction);
-
-	assertEquals(amount, getTotalCost(), 0.01);
-	
-	// Perform the action: Remove the transaction
-        model.removeTransaction(addedTransaction);
-    
-        // Post-condition: List of transactions is empty
-        List<Transaction> transactions = model.getTransactions();
-        assertEquals(0, transactions.size());
-    
-        // Check the total cost after removing the transaction
-        double totalCost = getTotalCost();
-        assertEquals(0.00, totalCost, 0.01);
-    }
-
-
-
     @Test
     public void inputHandlingCase2(){
 
         // Pre-condition: List of transactions is empty
         assertEquals(0, model.getTransactions().size());
 
-        // Perform the action: Add a transaction
-        double amount = 50.0;
-        String category = "food";
-        assertTrue(controller.addTransaction(amount, category));
-
-        // Post-condition: List of transactions contains only
-        //                 the added transaction
-        assertEquals(1, model.getTransactions().size());
-
-        // Check the contents of the list
-        Transaction firstTransaction = model.getTransactions().get(0);
-        checkTransaction(amount, category, firstTransaction);
-
-//        // Check the total amount
-        assertEquals(amount, getTotalCost(), 0.01);
 
         double invalidAmount = -2;
         String categoryToTest = "food";
@@ -190,27 +175,32 @@ public class TestExample {
         assertFalse(controller.addTransaction(invalidAmount, categoryToTest));
         controller.addTransaction(invalidAmount, categoryToTest);
 
-//        String message = JOptionPane.;
-//        System.out.println(message);
-//        assertEquals("Invalid amount or category entered", message);
-
         // check if view is updated
         JTable viewList = view.getTransactionsTable();
+        assertEquals(0, viewList.getRowCount());
 
-        LocalDateTime currentDateTime = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
-        String formattedDateTime = currentDateTime.format(formatter);
+        // invalid transaction should not be added
+        assertEquals(0, model.getTransactions().size());
 
-        Object[][] matrix = {
-                {1, 50.0 , "food", formattedDateTime },
-                {"Total", null , null, 50.0 }
-        };
-
-        for (int i = 0; i < viewList.getRowCount(); i++) {
-            for (int j = 0; j < viewList.getColumnCount(); j++) {
-                assertEquals(matrix[i][j], viewList.getValueAt(i, j));
-            }
+        try{
+            Transaction t = new Transaction(invalidAmount, categoryToTest);
         }
+        catch (IllegalArgumentException e){
+            assertNotNull(e.getMessage());
+            assertEquals("The amount is not valid.", e.getMessage());
+        }
+
+
+//        Transaction t = new Transaction();
+//        try{
+//            model.addTransaction(t);
+//        }
+//        catch (IllegalArgumentException e){
+//            assertNotNull(e.getMessage());
+//            assertEquals("The new transaction must be non-null.", e.getMessage());
+//        }
+
+
 
     }
 
@@ -290,7 +280,7 @@ public class TestExample {
     public void undoDisallowedCase5(){
         // Pre-condition: List of transactions is empty
         assertEquals(0, model.getTransactions().size());
-        assertFalse(view.getUndoBtn());
+        assertFalse(view.getUndoBtn().isEnabled());
 
     }
 
@@ -301,13 +291,57 @@ public class TestExample {
 
         // Perform the action: Add transactions
         controller.addTransaction(50.0, "food");
-        assertTrue(view.getUndoBtn());
+        controller.addTransaction(10.0, "bills");
+        // check if view is updated
+        JTable viewList = view.getTransactionsTable();
+//        assertEquals(3, viewList.getRowCount());
+
+        Object[][] matrix = {
+                {1, 50.0 , "food", null },
+                {2, 10.0 , "bills", null },
+                {"Total", null , null, 60.0 }
+        };
+
+        for (int i = 0; i < viewList.getRowCount(); i++) {
+            for (int j = 0; j < viewList.getColumnCount(); j++) {
+                if(i!=viewList.getRowCount()-1 && j==viewList.getColumnCount()-1){
+                    continue;
+                }
+                assertEquals(matrix[i][j], viewList.getValueAt(i, j));
+            }
+        }
+
+
 
         int [] selected = {0};
         model.setSelectedRows(selected);
-        controller.refreshUndoBtn();
+        System.out.println(Arrays.toString(model.getSelectedRows()));
 
-        view.getUndoBtn();
+        controller.refreshUndoBtn();
+        assertTrue(view.getUndoBtn().isEnabled());
+        controller.applyUndo(selected);
+
+        JTable viewList2 = view.getTransactionsTable();
+//        for (int i = 0; i < viewList2.getRowCount(); i++) {
+//            for (int j = 0; j < viewList2.getColumnCount(); j++) {
+//                System.out.println(viewList2.getValueAt(i, j));
+//            }
+//        }
+
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        String formattedDateTime = currentDateTime.format(formatter);
+
+        Object[][] matrix2 = {
+                {1, 10.0 , "bills", formattedDateTime },
+                {"Total", null , null, 10.0 }
+        };
+
+        for (int i = 0; i < viewList2.getRowCount(); i++) {
+            for (int j = 0; j < viewList2.getColumnCount(); j++) {
+                assertEquals(matrix2[i][j], viewList2.getValueAt(i, j));
+            }
+        }
 
 
     }

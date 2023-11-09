@@ -72,23 +72,24 @@ public class ExpenseTrackerApp {
     view.toFront();
    }});
 
-    view.applyUndoBtnListener(e -> {
-        try{
-            int[] rows = model.getSelectedRows();
-            List<Transaction> transactions = model.getTransactions();
-            List<Transaction> transactionsToRemove = new ArrayList<>();
-            for(int row : rows){
-                transactionsToRemove.add(transactions.get(row));
-            }
 
-            for (Transaction transaction: transactionsToRemove){
-                model.removeTransaction(transaction);
-            }
-            controller.refresh();
-        }
-        catch (IllegalArgumentException exception){
-        }
-    });
+
+
+      view.applyUndoBtnListener(e -> {
+          try{
+              int[] rows = model.getSelectedRows();
+              if (rows.length > 0){
+                  controller.applyUndo(rows);
+//                  controller.refresh();
+//                  controller.applyFilter();
+              }
+
+          }
+          catch (IllegalArgumentException exception){
+              JOptionPane.showMessageDialog(view,exception.getMessage());
+              view.toFront();
+          }
+      });
 
   view.addEventListenerToTableRows(e -> {
       model.setSelectedRows(view.getSelectedRows());

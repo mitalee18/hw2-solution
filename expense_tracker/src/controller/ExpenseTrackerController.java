@@ -77,6 +77,19 @@ public class ExpenseTrackerController {
 
   }
 
+  public void applyUndo(int[] rows){
+    List<Transaction> transactions = model.getTransactions();
+    List<Transaction> transactionsToRemove = new ArrayList<>();
+    for(int row : rows){
+      transactionsToRemove.add(transactions.get(row));
+    }
+    for(Transaction transaction: transactionsToRemove){
+      model.removeTransaction(transaction);
+    }
+    refresh();
+    applyFilter();
+  }
+
   public void addListenerToTableRows(){
 
   }
