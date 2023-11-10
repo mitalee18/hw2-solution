@@ -58,7 +58,6 @@ public class ExpenseTrackerController {
       // Use the Strategy class to perform the desired filtering
       List<Transaction> transactions = model.getTransactions();
       List<Transaction> filteredTransactions = filter.filter(transactions);
-//      model.setFilteredTransactions(filteredTransactions);
       List<Integer> rowIndexes = new ArrayList<>();
       for (Transaction t : filteredTransactions) {
         int rowIndex = transactions.indexOf(t);
@@ -74,6 +73,24 @@ public class ExpenseTrackerController {
 
   }
 
+  public void applyUndo(int[] rows){
+    List<Transaction> transactions = model.getTransactions();
+    List<Transaction> transactionsToRemove = new ArrayList<>();
+    for(int row : rows){
+      transactionsToRemove.add(transactions.get(row));
+    }
+    for(Transaction transaction: transactionsToRemove){
+      model.removeTransaction(transaction);
+    }
+    refresh();
+
+
+    // if filter is not null we apply the filter to remove filter from rows we just removed
+    if(filter != null){
+      applyFilter();
+    }
+
+  }
 
   public void refreshUndoBtn(){
     if(model.getSelectedRows().length > 0){

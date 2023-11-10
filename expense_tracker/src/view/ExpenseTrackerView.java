@@ -242,8 +242,8 @@ public class ExpenseTrackerView extends JFrame {
 
   }
 
-  public boolean getUndoBtn(){
-      return undoBtn.isEnabled();
+  public JButton getUndoBtn(){
+      return undoBtn;
   }
 
 
