@@ -80,8 +80,6 @@ public class ExpenseTrackerApp {
               int[] rows = model.getSelectedRows();
               if (rows.length > 0){
                   controller.applyUndo(rows);
-//                  controller.refresh();
-//                  controller.applyFilter();
               }
 
           }

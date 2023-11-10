@@ -28,7 +28,6 @@ public class ExpenseTrackerController {
   public ExpenseTrackerController(ExpenseTrackerModel model, ExpenseTrackerView view) {
     this.model = model;
     this.view = view;
-    addListenerToTableRows();
   }
 
   public void setFilter(TransactionFilter filter) {
@@ -87,10 +86,12 @@ public class ExpenseTrackerController {
       model.removeTransaction(transaction);
     }
     refresh();
-    applyFilter();
-  }
 
-  public void addListenerToTableRows(){
+
+    // if filter is not null we apply the filter to remove filter from rows we just removed
+    if(filter != null){
+      applyFilter();
+    }
 
   }
 

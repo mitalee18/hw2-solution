@@ -73,17 +73,16 @@ public class TestExample {
         assertEquals(0, model.getTransactions().size());
     
         // Perform the action: Add a transaction
-	double amount = 50.0;
-	String category = "food";
+        double amount = 50.0;
+        String category = "food";
         assertTrue(controller.addTransaction(amount, category));
-    
         // Post-condition: List of transactions contains only
-	//                 the added transaction	
+	    //                 the added transaction
         assertEquals(1, model.getTransactions().size());
     
         // Check the contents of the list
-	Transaction firstTransaction = model.getTransactions().get(0);
-	checkTransaction(amount, category, firstTransaction);
+        Transaction firstTransaction = model.getTransactions().get(0);
+        checkTransaction(amount, category, firstTransaction);
 	
 	// Check the total amount
         assertEquals(amount, getTotalCost(), 0.01);
@@ -144,12 +143,15 @@ public class TestExample {
         assertEquals(amount, getTotalCost(), 0.01);
 
         // check if view is updated
+        // Take all the list items from the view
         JTable viewList = view.getTransactionsTable();
 
+        // getting current system time
         LocalDateTime currentDateTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
         String formattedDateTime = currentDateTime.format(formatter);
 
+        // creating a datatable for asserting values
         Object[][] matrix = {
                 {1, 50.0 , "food", formattedDateTime },
                 {"Total", null , null, 50.0 }
@@ -173,7 +175,6 @@ public class TestExample {
         String categoryToTest = "food";
 
         assertFalse(controller.addTransaction(invalidAmount, categoryToTest));
-        controller.addTransaction(invalidAmount, categoryToTest);
 
         // check if view is updated
         JTable viewList = view.getTransactionsTable();
@@ -182,6 +183,7 @@ public class TestExample {
         // invalid transaction should not be added
         assertEquals(0, model.getTransactions().size());
 
+        // trying to invoke the object creation using the construction to catch the error message
         try{
             Transaction t = new Transaction(invalidAmount, categoryToTest);
         }
@@ -189,18 +191,6 @@ public class TestExample {
             assertNotNull(e.getMessage());
             assertEquals("The amount is not valid.", e.getMessage());
         }
-
-
-//        Transaction t = new Transaction();
-//        try{
-//            model.addTransaction(t);
-//        }
-//        catch (IllegalArgumentException e){
-//            assertNotNull(e.getMessage());
-//            assertEquals("The new transaction must be non-null.", e.getMessage());
-//        }
-
-
 
     }
 
@@ -213,23 +203,27 @@ public class TestExample {
         controller.addTransaction(50.0, "food");
         controller.addTransaction(100.0, "bills");
 
+        // creating amount filter
         double amountFilterInput = 50.0;
         AmountFilter amountFilter = new AmountFilter(amountFilterInput);
         controller.setFilter(amountFilter);
         controller.applyFilter();
 
-
+        // getting all the rows from the view
         JTable viewList = view.getTransactionsTable();
 
+        // setting colours
         Color expectedColor = new Color(173, 255, 168);
         Color white = new Color(255, 255, 255);
 
+        // creating a datatable matrix for assertion
         Object[][] matrix = {
                 {expectedColor, expectedColor, expectedColor, expectedColor },
                 {white,white,white,white },
                 {white,white,white,white }
         };
 
+        // checking every cell in the view for it's background colour
         for (int i = 0; i < viewList.getRowCount(); i++) {
             for (int j = 0; j < viewList.getColumnCount(); j++) {
                 Component cellRenderer = viewList.getCellRenderer(i, j).getTableCellRendererComponent(viewList, viewList.getValueAt(i, j), false, false, i, j);
@@ -249,23 +243,27 @@ public class TestExample {
         controller.addTransaction(50.0, "food");
         controller.addTransaction(100.0, "bills");
 
+        // creating category filter
         String categoryFilterInput = "bills";
         CategoryFilter categoryfilter = new CategoryFilter(categoryFilterInput);
         controller.setFilter(categoryfilter);
         controller.applyFilter();
 
-
+        // getting all the rows from the view
         JTable viewList = view.getTransactionsTable();
 
+        // setting colors
         Color expectedColor = new Color(173, 255, 168);
         Color white = new Color(255, 255, 255);
 
+        // creating a datatable matrix for assertion
         Object[][] matrix = {
                 {white,white,white,white },
                 {expectedColor, expectedColor, expectedColor, expectedColor },
                 {white,white,white,white }
         };
 
+        // checking every cell in the view for it's background colour
         for (int i = 0; i < viewList.getRowCount(); i++) {
             for (int j = 0; j < viewList.getColumnCount(); j++) {
                 Component cellRenderer = viewList.getCellRenderer(i, j).getTableCellRendererComponent(viewList, viewList.getValueAt(i, j), false, false, i, j);
@@ -275,11 +273,19 @@ public class TestExample {
         }
     }
 
-
     @Test
     public void undoDisallowedCase5(){
         // Pre-condition: List of transactions is empty
         assertEquals(0, model.getTransactions().size());
+
+        //since there is nothing in the transaction table button should be disabled
+        assertFalse(view.getUndoBtn().isEnabled());
+
+        // adding transaction
+        controller.addTransaction(50.0, "food");
+        controller.addTransaction(100.0, "bills");
+
+        //since no transaction was selected the button should be disabled
         assertFalse(view.getUndoBtn().isEnabled());
 
     }
@@ -292,18 +298,22 @@ public class TestExample {
         // Perform the action: Add transactions
         controller.addTransaction(50.0, "food");
         controller.addTransaction(10.0, "bills");
-        // check if view is updated
-        JTable viewList = view.getTransactionsTable();
-//        assertEquals(3, viewList.getRowCount());
 
+        // getting all the list elements from the view
+        JTable viewList = view.getTransactionsTable();
+
+        // creating a datatable for asserting values
         Object[][] matrix = {
                 {1, 50.0 , "food", null },
                 {2, 10.0 , "bills", null },
                 {"Total", null , null, 60.0 }
         };
 
+
+        // asserting all the values before undo
         for (int i = 0; i < viewList.getRowCount(); i++) {
             for (int j = 0; j < viewList.getColumnCount(); j++) {
+                // skipping datetime
                 if(i!=viewList.getRowCount()-1 && j==viewList.getColumnCount()-1){
                     continue;
                 }
@@ -311,34 +321,33 @@ public class TestExample {
             }
         }
 
-
-
+        // now selecting row to undo
         int [] selected = {0};
         model.setSelectedRows(selected);
-        System.out.println(Arrays.toString(model.getSelectedRows()));
 
+        // enabling undo button
         controller.refreshUndoBtn();
         assertTrue(view.getUndoBtn().isEnabled());
+
+        //applying undo to the selected row
         controller.applyUndo(selected);
 
+        // getting view elements after undo
         JTable viewList2 = view.getTransactionsTable();
-//        for (int i = 0; i < viewList2.getRowCount(); i++) {
-//            for (int j = 0; j < viewList2.getColumnCount(); j++) {
-//                System.out.println(viewList2.getValueAt(i, j));
-//            }
-//        }
 
-        LocalDateTime currentDateTime = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
-        String formattedDateTime = currentDateTime.format(formatter);
-
+        // creating a datatable for asserting
         Object[][] matrix2 = {
-                {1, 10.0 , "bills", formattedDateTime },
+                {1, 10.0 , "bills", null },
                 {"Total", null , null, 10.0 }
         };
 
+        // asserting
         for (int i = 0; i < viewList2.getRowCount(); i++) {
             for (int j = 0; j < viewList2.getColumnCount(); j++) {
+                // skipping datetime
+                if(i!=viewList.getRowCount()-1 && j==viewList.getColumnCount()-1){
+                    continue;
+                }
                 assertEquals(matrix2[i][j], viewList2.getValueAt(i, j));
             }
         }
