@@ -72,9 +72,7 @@ public class ExpenseTrackerApp {
     view.toFront();
    }});
 
-
-
-
+    // add action listener to the "Undo" button
       view.applyUndoBtnListener(e -> {
           try{
               int[] rows = model.getSelectedRows();
