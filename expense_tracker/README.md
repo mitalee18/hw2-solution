@@ -33,17 +33,17 @@ To support this feature we performed following changed
 Added transaction to the table through controller and checked if transaction table contents and total is updated through model, view and controller.    
 
 2. Test Invalid Input Handling  
-Tried to add an invalid transaction through controller, checked through view that invalid transaction is not added and transactions and total remains the same 
+Tried to add an invalid transaction through controller, checked through view that invalid transaction is not added and that the transactions and total remains the same 
 Displayed error by catching illegal argument exception  
 
 3.  Test Filter by Amount
-Added multiple transactions with different amounts, and applied filter for a aspecific amount through controller. Checked if correct rows were filtered/highlighted through view.  
+Added multiple transactions with different amounts, and applied filter for a specific amount through controller. Checked if correct rows were filtered/highlighted through view.  
 
 4. Test Filter by Category 
-Added multiple transactions with different categories, and applied filter for a aspecific category through controller. Checked if correct rows were filtered/highlighted through view.
+Added multiple transactions with different categories, and applied filter for a specific category through controller. Checked if correct rows were filtered/highlighted through view.
 
 5. Test Undo Disallowed  
-Checked through model if transaction list is empty. Checked through view if undo button is disabled when there are no transactions added.
+Checked through model if transaction list is empty the undo button should be disabled. Checked through view if undo button is disabled when there are no transactions selected.
 
 6. Test Undo Allowed  
-Added multiple transactions through controller. Selected a transaction to undo through model. Performed undo functionality through controller. Checked if transaction was undone and total was updated through view.
+Added multiple transactions through controller. Selected a transaction to undo through model. Performed undo functionality through controller. Checked if transaction was undone and total was updated through model.

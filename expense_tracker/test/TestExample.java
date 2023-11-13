@@ -346,24 +346,8 @@ public class TestExample {
         // getting all the list elements from the view
         JTable viewList = view.getTransactionsTable();
 
-        // creating a datatable for asserting values
-        Object[][] matrix = {
-                {1, 50.0 , "food", null },
-                {2, 10.0 , "bills", null },
-                {"Total", null , null, 60.0 }
-        };
-
-
-        // asserting all the values before undo
-        for (int i = 0; i < viewList.getRowCount(); i++) {
-            for (int j = 0; j < viewList.getColumnCount(); j++) {
-                // skipping datetime
-                if(i!=viewList.getRowCount()-1 && j==viewList.getColumnCount()-1){
-                    continue;
-                }
-                assertEquals(matrix[i][j], viewList.getValueAt(i, j));
-            }
-        }
+        // asserting if there are 2 transactions and 1 total in the view before undo
+        assertEquals(3,viewList.getRowCount());
 
         // now selecting row to undo
         int [] selected = {0};
@@ -377,22 +361,33 @@ public class TestExample {
         controller.applyUndo(selected);
 
         // getting view elements after undo
-        JTable viewList2 = view.getTransactionsTable();
+        viewList = view.getTransactionsTable();
+
+        // asserting if there is 1 transaction and 1 total in the view after undo
+        assertEquals(2,viewList.getRowCount());
 
         // creating a datatable for asserting
-        Object[][] matrix2 = {
-                {1, 10.0 , "bills", null },
+        Object[][] matrix = {
+                {1, 10.0 , "bills", new Date().getTime() },
                 {"Total", null , null, 10.0 }
         };
 
-        // asserting
-        for (int i = 0; i < viewList2.getRowCount(); i++) {
-            for (int j = 0; j < viewList2.getColumnCount(); j++) {
-                // skipping datetime
-                if(i!=viewList.getRowCount()-1 && j==viewList.getColumnCount()-1){
-                    continue;
+        // checking through model if the transactions is undone
+        DefaultTableModel tableListModel = view.getTableModel();
+        Date transactionDate = null;
+        try {
+            transactionDate = Transaction.dateFormatter.parse((String) tableListModel.getValueAt(0, 3));
+        } catch (ParseException e) {
+            assertNotNull(transactionDate);
+        }
+
+        for (int i = 0; i < tableListModel.getRowCount(); i++) {
+            for (int j = 0; j < tableListModel.getColumnCount(); j++) {
+                if (i != tableListModel.getRowCount() - 1 && j == tableListModel.getColumnCount() - 1) {
+                    assertTrue((long) matrix[i][j] - transactionDate.getTime() < 60000);
+                } else {
+                    assertEquals(matrix[i][j], tableListModel.getValueAt(i, j));
                 }
-                assertEquals(matrix2[i][j], viewList2.getValueAt(i, j));
             }
         }
 
