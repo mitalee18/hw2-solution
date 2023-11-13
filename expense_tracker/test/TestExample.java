@@ -170,20 +170,20 @@ public class TestExample {
                 {1, 50.0 , "food", new Date().getTime() },
                 {"Total", null , null, 50.0 }
         };
-        DefaultTableModel tableModel = view.getTableModel();
+        DefaultTableModel tableListModel = view.getTableModel();
         Date transactionDate = null;
         try {
-            transactionDate = Transaction.dateFormatter.parse((String) tableModel.getValueAt(0, 3));
+            transactionDate = Transaction.dateFormatter.parse((String) tableListModel.getValueAt(0, 3));
         } catch (ParseException e) {
             assertNotNull(transactionDate);
         }
 
-        for (int i = 0; i < tableModel.getRowCount(); i++) {
-            for (int j = 0; j < tableModel.getColumnCount(); j++) {
-                if (i != tableModel.getRowCount() - 1 && j == tableModel.getColumnCount() - 1) {
+        for (int i = 0; i < tableListModel.getRowCount(); i++) {
+            for (int j = 0; j < tableListModel.getColumnCount(); j++) {
+                if (i != tableListModel.getRowCount() - 1 && j == tableListModel.getColumnCount() - 1) {
                     assertTrue((long) matrix2[i][j] - transactionDate.getTime() < 60000);
                 } else {
-                    assertEquals(matrix2[i][j], tableModel.getValueAt(i, j));
+                    assertEquals(matrix2[i][j], tableListModel.getValueAt(i, j));
                 }
             }
         }
