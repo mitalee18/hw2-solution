@@ -16,6 +16,7 @@ import model.Transaction;
 import view.ExpenseTrackerView;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.time.LocalDateTime;
 import model.Filter.AmountFilter;
 import model.Filter.CategoryFilter;
@@ -162,6 +163,31 @@ public class TestExample {
                 assertEquals(matrix[i][j], viewList.getValueAt(i, j));
             }
         }
+
+
+        //check if model is updated
+        Object[][] matrix2 = {
+                {1, 50.0 , "food", new Date().getTime() },
+                {"Total", null , null, 50.0 }
+        };
+        DefaultTableModel tableModel = view.getTableModel();
+        Date transactionDate = null;
+        try {
+            transactionDate = Transaction.dateFormatter.parse((String) tableModel.getValueAt(0, 3));
+        } catch (ParseException e) {
+            assertNotNull(transactionDate);
+        }
+
+        for (int i = 0; i < tableModel.getRowCount(); i++) {
+            for (int j = 0; j < tableModel.getColumnCount(); j++) {
+                if (i != tableModel.getRowCount() - 1 && j == tableModel.getColumnCount() - 1) {
+                    assertTrue((long) matrix2[i][j] - transactionDate.getTime() < 60000);
+                } else {
+                    assertEquals(matrix2[i][j], tableModel.getValueAt(i, j));
+                }
+            }
+        }
+
     }
 
     @Test
@@ -190,6 +216,24 @@ public class TestExample {
         catch (IllegalArgumentException e){
             assertNotNull(e.getMessage());
             assertEquals("The amount is not valid.", e.getMessage());
+        }
+
+        //check for invalid category
+        assertFalse(controller.addTransaction(50, "invalidCategory"));
+        controller.addTransaction(50, "invalidCategory");
+
+        // check if view is updated
+        assertEquals(0, viewList.getRowCount());
+
+        // invalid transaction should not be added
+        assertEquals(0, model.getTransactions().size());
+
+        try{
+            Transaction t = new Transaction(50, "invalidCategory");
+        }
+        catch (IllegalArgumentException e){
+            assertNotNull(e.getMessage());
+            assertEquals("The category is not valid.", e.getMessage());
         }
 
     }
