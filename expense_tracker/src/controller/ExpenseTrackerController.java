@@ -84,7 +84,6 @@ public class ExpenseTrackerController {
     }
     refresh();
 
-
     // if filter is not null we apply the filter to remove filter from rows we just removed
     if(filter != null){
       applyFilter();
